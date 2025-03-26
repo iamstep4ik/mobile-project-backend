@@ -34,3 +34,7 @@ func Fatal(msg string, fields ...zap.Field) {
 func Sync() {
 	logger.Sync()
 }
+
+func GetLogger() *zap.Logger {
+	return logger
+}

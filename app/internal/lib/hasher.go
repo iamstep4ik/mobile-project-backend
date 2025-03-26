@@ -6,15 +6,28 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func HashPassword(password string) string {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	if err != nil {
-		log.Fatal("Failed to hash password: %v", zap.Error(err))
-	}
-	return string(bytes)
+type PasswordHasher interface {
+	HashPassword(password string) (string, error)
+	CheckPasswordHash(password, hash string) bool
 }
 
-func CheckPasswordHash(password, hash string) bool {
+type hasher struct {
+	logger *zap.Logger
+}
+
+func NewPasswordHasher() PasswordHasher {
+	return &hasher{logger: log.GetLogger()}
+}
+
+func (h *hasher) HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	if err != nil {
+		h.logger.Fatal("Failed to hash password", zap.Error(err))
+	}
+	return string(bytes), nil
+}
+
+func (h *hasher) CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }
