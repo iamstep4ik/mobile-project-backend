@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/iamstep4ik/mobile-project-backend/app/internal/config"
 	"github.com/iamstep4ik/mobile-project-backend/app/internal/log"
 	"github.com/iamstep4ik/mobile-project-backend/app/internal/repository"
@@ -9,6 +10,8 @@ import (
 )
 
 func main() {
+
+	r := gin.Default()
 	err := log.Initialize()
 	if err != nil {
 		panic("Failed to initialize logger: " + err.Error())
@@ -29,4 +32,7 @@ func main() {
 	defer db.Close()
 	log.Info("Successfully connected to database")
 
+	log.Info("Server started on port " + cfg.Server.Port)
+
+	r.Run(":" + cfg.Server.Port)
 }
