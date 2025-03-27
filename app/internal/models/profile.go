@@ -1,8 +1,14 @@
 package models
 
 type Profile struct {
-	Name        string
-	Surname     string
-	ImagesURL   []string
-	Description string
+	Name        string   `json:"name"`
+	Surname     string   `json:"surname"`
+	ImagesURL   []string `json:"images_url"`
+	Description string   `json:"description"`
+}
+
+type ProfileUseCase interface {
+}
+
+type ProfileRepository interface {
 }
