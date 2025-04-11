@@ -26,7 +26,7 @@ func (r *ProfileRepository) CreateProfile(p *models.Profile) (*models.Profile, e
 
 	err := r.db.QueryRow(
 		context.Background(),
-		"INSERT INTO profiles (id, user_id, name, surname,images_url,description,gender,age,location,interests) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id",
+		"INSERT INTO profiles (id, user_id, name, surname,imagesurl,description,gender,age,location,interests) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id",
 		p.ID,
 		p.UserID,
 		p.Name,
