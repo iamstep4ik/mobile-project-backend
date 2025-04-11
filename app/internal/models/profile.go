@@ -7,7 +7,7 @@ type Profile struct {
 	UserID      uuid.UUID `json:"user_id"`
 	Name        string    `json:"name"`
 	Surname     string    `json:"surname"`
-	ImagesURL   []string  `json:"images_url"`
+	ImagesURL   []string  `json:"imagesurl"`
 	Description string    `json:"description"`
 	Gender      string    `json:"gender"`
 	Age         int       `json:"age"`
