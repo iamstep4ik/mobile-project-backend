@@ -6,6 +6,7 @@ import (
 	"github.com/iamstep4ik/mobile-project-backend/app/internal/log"
 	"github.com/iamstep4ik/mobile-project-backend/app/internal/models"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/lib/pq"
 	"go.uber.org/zap"
 )
 
@@ -23,6 +24,8 @@ func NewProfileRepository(db *pgxpool.Pool) *ProfileRepository {
 
 func (r *ProfileRepository) CreateProfile(p *models.Profile) (*models.Profile, error) {
 	r.logger.Info("Received profile data", zap.Any("profile", p))
+	images := pq.Array(p.ImagesURL)
+	interests := pq.Array(p.Interests)
 
 	err := r.db.QueryRow(
 		context.Background(),
@@ -31,13 +34,13 @@ func (r *ProfileRepository) CreateProfile(p *models.Profile) (*models.Profile, e
 		p.UserID,
 		p.Name,
 		p.Surname,
-		p.ImagesURL,
+		images,
 		p.Description,
 		p.Gender,
 		p.Age,
 		p.Location,
-		p.Interests,
-	).Scan(p.ID)
+		interests,
+	).Scan(&p.ID)
 
 	if err != nil {
 		r.logger.Error("Failed to insert profile into database", zap.Error(err))
