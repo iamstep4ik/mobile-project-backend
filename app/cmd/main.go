@@ -35,13 +35,16 @@ func main() {
 	defer db.Close()
 	log.Info("Successfully connected to database")
 
-	repo := repository.NewUserRepository(db)
-	userUseCase := service.NewUserUseCase(repo)
+	userrepo := repository.NewUserRepository(db)
+	userUseCase := service.NewUserUseCase(userrepo)
 	userHandler := handlers.NewUserHandler(userUseCase)
+	profileRepo := repository.NewProfileRepository(db)
+	profileUseCase := service.NewProfileUseCase(profileRepo)
+	profileHandler := handlers.NewProfileHandler(profileUseCase)
 
 	router := gin.Default()
 
-	routes.RegisterRoutes(router, userHandler)
+	routes.RegisterRoutes(router, userHandler, profileHandler)
 
 	log.Info("Server started on port " + cfg.Server.Port)
 	if err := router.Run(":" + cfg.Server.Port); err != nil {

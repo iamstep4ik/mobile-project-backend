@@ -1,20 +1,21 @@
 services:
   db:
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     image: postgres:latest
     restart: always
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
-    ports:
-      - "${DB_PORT}:5432"
+      PG_MAX_CONNECTIONS: 100
+      PG_SHARED_BUFFERS: 256MB
+      POSTGRES_LOG_STATEMENT: all
     volumes:
-      - ~/postgres-data:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   migrations:
     image: ghcr.io/kukymbr/goose-docker:latest
@@ -22,10 +23,8 @@ services:
     env_file:
       - .env
     depends_on:
-      - db
-    environment:
-      - GOOSE_DRIVER=${GOOSE_DRIVER}
-      - GOOSE_DBSTRING=${GOOSE_DBSTRING}
+      db:
+        condition: service_healthy
     volumes:
       - ./migrations:/migrations
 
@@ -43,3 +42,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
+
+volumes:
+  pgdata:

@@ -65,3 +65,16 @@ func (r *UserRepository) GetUserByEmail(email string) (*models.User, error) {
 	}
 	return user, nil
 }
+func (r *UserRepository) GetUserByID(id string) (*models.User, error) {
+	user := &models.User{}
+	err := r.db.QueryRow(
+		context.Background(),
+		"SELECT id, name, surname, email, hashed_password FROM users WHERE id = $1",
+		id,
+	).Scan(&user.ID, &user.Name, &user.Surname, &user.Email, &user.HashedPassword)
+	if err != nil {
+		r.logger.Error("Failed to get user by ID", zap.Error(err))
+		return nil, err
+	}
+	return user, nil
+}
